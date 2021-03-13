@@ -57,6 +57,12 @@ class InternshipOffer
      */
     private $online;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="internshipOffers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $addedBy;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -163,5 +169,10 @@ class InternshipOffer
         $this->online = $online;
 
         return $this;
+    }
+
+    public function getAddedBy(): ?User
+    {
+        return $this->addedBy;
     }
 }

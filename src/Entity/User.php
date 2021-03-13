@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -76,6 +78,16 @@ class User
      * @ORM\Column(type="date")
      */
     private $entered;
+
+    /**
+     * @ORM\OneToMany(targetEntity=InternshipOffer::class, mappedBy="addedBy")
+     */
+    private $internshipOffers;
+
+    public function __construct()
+    {
+        $this->internshipOffers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -222,6 +234,36 @@ class User
     public function setEntered(\DateTimeInterface $entered): self
     {
         $this->entered = $entered;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|InternshipOffer[]
+     */
+    public function getInternshipOffers(): Collection
+    {
+        return $this->internshipOffers;
+    }
+
+    public function addInternshipOffer(InternshipOffer $internshipOffer): self
+    {
+        if (!$this->internshipOffers->contains($internshipOffer)) {
+            $this->internshipOffers[] = $internshipOffer;
+            $internshipOffer->setAddedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInternshipOffer(InternshipOffer $internshipOffer): self
+    {
+        if ($this->internshipOffers->removeElement($internshipOffer)) {
+            // set the owning side to null (unless already changed)
+            if ($internshipOffer->getAddedBy() === $this) {
+                $internshipOffer->setAddedBy(null);
+            }
+        }
 
         return $this;
     }
